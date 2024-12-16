@@ -1,66 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+= SPEC-001: Sistema de Gestão de Estoque
+:sectnums:
+:toc:
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+== Background
 
-## About Laravel
+Este projeto visa criar um sistema de gestão de estoque eficiente para atender às necessidades de controle de produtos, fornecedores e movimentações de estoque. O sistema será utilizado por operadores de estoque e administradores, garantindo um controle preciso, alertas automáticos e geração de relatórios.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+== Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Os requisitos da aplicação foram organizados com base no método MoSCoW, para definir as prioridades.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+=== Must Have (Obrigatório)
+- Cadastro de produtos com nome, SKU, descrição, categoria, preço de custo e preço de venda.
+- Controle de estoques com suporte para múltiplos armazéns.
+- Registro de movimentações de estoque (entrada, saída e ajustes manuais).
+- Alertas automáticos de baixa quantidade de estoque com base em limites configuráveis por produto.
+- Controle de usuários com permissões de acesso (ex.: administrador, operador de estoque).
+- Dashboard com resumo de estoque, entradas/saídas recentes e produtos críticos.
+- Relatórios de movimentações e histórico de estoques por período.
+- **Gestão de fornecedores**: cadastro, edição, exclusão e consulta de fornecedores, com vínculo no cadastro de produtos.
 
-## Learning Laravel
+=== Should Have (Importante, mas não essencial)
+- Integração com fornecedores para automação de pedidos de reposição.
+- Suporte a múltiplas moedas e unidades de medida.
+- Função de importação/exportação de dados em formato CSV.
+- API para integração com sistemas externos.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+=== Could Have (Desejável)
+- Aplicativo móvel para consulta rápida de estoque e registro de movimentações.
+- Suporte para códigos de barras ou QR code para busca rápida de produtos.
+- Relatórios gráficos avançados para análise de tendências.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+=== Won't Have (Fora do escopo inicial)
+- Funcionalidades avançadas de ERP, como faturamento ou contabilidade.
+- Suporte a lojas físicas ou vendas diretas ao consumidor (front-end e-commerce).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+== Method
 
-## Laravel Sponsors
+=== Arquitetura Geral
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+A aplicação será construída seguindo uma arquitetura de camadas, baseada no padrão **MVC** (Model-View-Controller) e **RESTful API**. Os principais componentes serão:
+- **Front-end:** Construído com Metronic/Vue.js, será responsável pela interface de usuário.
+- **Back-end:** Desenvolvido com Laravel (PHP), para a lógica de negócios e endpoints REST.
+- **Banco de Dados:** Usará MySQL para persistência de dados.
+- **Serviços de Notificação:** Alertas de baixa quantidade de estoque.
+- **Relatórios:** Geração e exportação de relatórios.
 
-### Premium Partners
+==== Diagrama de Componentes
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```plantuml
+@startuml
+rectangle "Front-end" as Frontend {
+    [Login UI]
+    [Cadastro de Produtos]
+    [Gestão de Estoques]
+    [Dashboard]
+}
 
-## Contributing
+rectangle "Back-end" as Backend {
+    [API REST]
+    [Autenticação]
+    [Gestão de Produtos]
+    [Gestão de Estoque]
+    [Gestão de Fornecedores]
+    [Relatórios]
+    [Notificações]
+}
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+database "Banco de Dados" as DB {
+    [Produtos]
+    [Estoque]
+    [Movimentações]
+    [Usuários]
+    [Fornecedores]
+}
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Frontend --> Backend : HTTP/HTTPS
+Backend --> DB : Queries (SQL)
+@enduml
